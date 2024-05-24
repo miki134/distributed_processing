@@ -20,22 +20,11 @@ void tourist(int rank, int peopleCount) {
                 MPI_Recv(NULL, 0, MPI_INT, MPI_ANY_SOURCE, CHECK_ACK, MPI_COMM_WORLD, &status);
                 guideId = status.MPI_SOURCE;
 
-                MPI_Send(NULL, 0, MPI_INT, status.MPI_SOURCE, REGISTER_REQ, MPI_COMM_WORLD);
+                MPI_Recv(NULL, 0, MPI_INT, guideId, REGISTER_REQ, MPI_COMM_WORLD, &status);
+                state = WAITING_FOR_TOUR;
+                MPI_Send(NULL, 0, MPI_INT, guideId, REGISTER_ACK, MPI_COMM_WORLD);
 
-                do {
-                    MPI_Recv(NULL, 0, MPI_INT, status.MPI_SOURCE, ANY_TAG, MPI_COMM_WORLD, &status);
-                } while(
-                        //todo spróbowac zmienic tego pornusa
-                        (status.MPI_TAG != REGISTER_ACK && status.MPI_TAG != START_TOUR_REQ)
-                        || (status.MPI_TAG == START_TOUR_REQ && status.MPI_SOURCE != guideId)
-                )
-
-                if(status.MPI_TAG == REGISTER_ACK) {
-                    state = WAITING_FOR_TOUR;
-                    break;
-                } else if (status.MPI_TAG == START_TOUR_REQ) {
-                    break;
-                }
+                break;
 
             case WAITING_FOR_TOUR:
                 if(guideId != -1) {
