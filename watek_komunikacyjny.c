@@ -20,8 +20,9 @@ void *startKomWatek(void *ptr)
         switch (status.MPI_TAG)
         {
         case REQUEST:
-            debug("Ktoś coś prosi. A niech ma!")
-                sendPacket(0, status.MPI_SOURCE, ACK);
+            debug("Ktoś coś prosi. A niech ma!");
+
+            sendPacket(0, status.MPI_SOURCE, ACK);
             break;
         case ACK:
             debug("Dostałem ACK od %d, mam już %d", status.MPI_SOURCE, ackCount);

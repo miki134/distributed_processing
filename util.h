@@ -1,6 +1,7 @@
 #ifndef UTILH
 #define UTILH
 #include "main.h"
+#include "queue.h"
 
 /* typ pakietu */
 typedef struct {
@@ -20,6 +21,7 @@ typedef struct {
 // #define APP_PKT 4
 // #define FINISH  5
 
+Queue queue;
 
 enum {
     CHECK_REQ  = 1,

@@ -17,15 +17,18 @@ void *startMessageHandlerThread(void *ptr)
 
         switch (status.MPI_TAG)
         {
-        case REQUEST:
-            debug("Ktoś coś prosi. A niech ma!")
-                sendPacket(0, status.MPI_SOURCE, ACK);
+        case CHECK_REQ:
+        {
+            debug("Ktoś coś prosi. A niech ma!");
+            sendPacket(0, status.MPI_SOURCE, CHECK_ACK);
+            enqueue(queue, status.MPI_SOURCE);
             break;
-        case ACK:
+        }
+        case CHECK_ACK:
             // pthread_mutex_lock(&clkMut); ???
             debug("Dostałem ACK od %d, mam już %d", status.MPI_SOURCE, ackCount);
-            ackCount++; /* czy potrzeba tutaj muteksa? Będzie wyścig, czy nie będzie? Zastanówcie się. */
-            pthread_mutex_lock(&clkMut); //todo: czy to nie powinno być w 25 linii?
+            ackCount++;                  /* czy potrzeba tutaj muteksa? Będzie wyścig, czy nie będzie? Zastanówcie się. */
+            pthread_mutex_lock(&clkMut); // todo: czy to nie powinno być w 25 linii?
             clk = max(pakiet.ts, clk) + 1;
             pthread_mutex_unlock(&clkMut);
             break;

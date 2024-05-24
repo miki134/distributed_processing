@@ -3,7 +3,6 @@
 #include <time.h>
 
 void tourist(int rank, int peopleCount) {
-    State state = WAITING_FOR_REGISTER;
     MPI_Status status;
 
     int guideId = -1;
