@@ -34,6 +34,7 @@ int main(int argc, char** argv) {
         int participants = 0;
         bool tour_active = false;
 
+        guide()
        
     } else { // Turyści
         while (true) {

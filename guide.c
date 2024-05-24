@@ -7,48 +7,56 @@ void guide(int rank, int peopleCount)
 
     while (true)
     {
-        MPI_Recv(NULL, 0, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+        // MPI_Recv(NULL, 0, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 
-        switch (status.MPI_TAG)
+        switch (state)
         {
-        case CHECK_REQ:
+        case REST:
         {
-            if (participants < g)
+             if (participants < g)
             {
-                MPI_Send(NULL, 0, MPI_INT, status.MPI_SOURCE, CHECK_ACK, MPI_COMM_WORLD);
+                sendPacket(0, status.MPI_SOURCE, CHECK_ACK);
             }
             break;
         }
-        case REGISTER_REQ:
-        {
-            if (participants < g)
-            {
-                participants++;
-                MPI_Send(NULL, 0, MPI_INT, status.MPI_SOURCE, REGISTER_ACK, MPI_COMM_WORLD);
-            }
 
-            if (participants.size == g)
-            {
-                for (int i = 0; i <= peopleCount; ++i)
-                {
-                    MPI_Send(NULL, 0, MPI_INT, i, START_TOUR_REQ, MPI_COMM_WORLD);
-                }
+        // case CHECK_REQ:
+        // {
+        //     if (participants < g)
+        //     {
+        //         sendPacket(0, status.MPI_SOURCE, CHECK_ACK);
+        //     }
+        //     break;
+        // }
+        // case REGISTER_REQ:
+        // {
+        //     if (participants < g)
+        //     {
+        //         participants++;
+        //         sendPacket(0, status.MPI_SOURCE, REGISTER_ACK);
+        //     }
 
-                state = IN_TOUR;
+        //     if (participants.size == g)
+        //     {
+        //         for (int i = 0; i <= peopleCount; ++i)
+        //         {
+        //             sendPacket(0, status.MPI_SOURCE, REGISTER_ACK);
+        //         }
 
-                sleep(TOUR_TIME);
+        //         changeState(IN_TOUR);
+        //         sleep(TOUR_TIME);
 
-                for (int i = 0; i <= peopleCount; ++i)
-                {
-                    MPI_Send(NULL, 0, MPI_INT, i, END_TOUR_REQ, MPI_COMM_WORLD);
-                }
+        //         for (int i = 0; i <= peopleCount; ++i)
+        //         {
+        //             sendPacket(0, status.MPI_SOURCE, REGISTER_ACK);
+        //         }
 
-                participants = 0;
-                state = REST;
-            }
-            break;
+        //         participants = 0;
+        //         changeState(REST)
+        //     }
+        //     break;
+        // }
         }
 
         sleep(SEC_IN_STATE);
     }
-}

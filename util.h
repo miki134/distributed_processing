@@ -14,11 +14,11 @@ typedef struct {
 
 /* Typy wiadomości */
 /* TYPY PAKIETÓW */
-#define ACK     1
-#define REQUEST 2
-#define RELEASE 3
-#define APP_PKT 4
-#define FINISH  5
+// #define ACK     1
+// #define REQUEST 2
+// #define RELEASE 3
+// #define APP_PKT 4
+// #define FINISH  5
 
 
 enum {
