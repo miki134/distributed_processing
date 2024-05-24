@@ -1,7 +1,6 @@
 /* w main.h także makra println oraz debug -  z kolorkami! */
 #include "main.h"
-#include "watek_glowny.h"
-#include "watek_komunikacyjny.h"
+#include "message_handler.h"
 #include "util.h"
 /*
  * W main.h extern int rank (zapowiedź) w main.c int rank (definicja)
@@ -64,15 +63,16 @@ int main(int argc, char **argv)
 
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
     check_thread_support(provided);
+    inicjuj_typ_pakietu();
+    
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    pthread_create( &threadKom, NULL, startKomWatek , 0);
+    pthread_create( &threadKom, NULL, startMessageHandlerThread , 0);
 
     int p = 3; // liczba przewodników
     int g = 5; // limit uczestników obsługiwanych przez przewodnika
     int n = 10; // ilość uczestników chętnych na udział w wycieczce
-    State state = WAITING_FOR_REGISTER;
 
     if (rank < p) { // Przewodnicy
         guide(rank, n+p);
