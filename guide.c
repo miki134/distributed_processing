@@ -1,16 +1,25 @@
 #include "util.h"
 #include "dynamic_array.h"
 
+#include <stdbool.h>
+
 void guide(int rank, int peopleCount, int peoplePerTour)
 {
     int *actualParticipants = (int *)malloc(peoplePerTour * sizeof(int));
 
     while (true)
     {
-        switch (getState())
+        int cp_state = getState();
+        switch (cp_state)
         {
         case REST:
         {
+            for (int i = 0; i <= willingTourists.size; ++i)
+            {
+                int id = dequeue(&willingTourists);
+                sendPacket(0, id, CHECK_ACK);
+            }
+
             changeState(WAITING_FOR_TOUR);
             break;
         }
@@ -18,16 +27,16 @@ void guide(int rank, int peopleCount, int peoplePerTour)
         {
             while ((participants < peoplePerTour) && queue.size != 0)
             {
-                int participant = enqueue(queue);
+                int participant = dequeue(&queue);
                 actualParticipants[participants++] = participant;
                 sendPacket(0, participant, REGISTER_ACK);
             }
 
-            if (participants.size == peoplePerTour)
+            if (participants == peoplePerTour)
             {
-                for (int i = 0; i <= peoplePerTour; ++i)
+                for (int i = 0; i <= peopleCount; ++i)
                 {
-                    sendPacket(0, actualParticipants[i], START_TOUR_ACK);
+                    sendPacket(0, i, START_TOUR_ACK);
                 }
 
                 changeState(IN_TOUR);
@@ -39,11 +48,11 @@ void guide(int rank, int peopleCount, int peoplePerTour)
 
             for (int i = 0; i <= peopleCount; ++i)
             {
-                sendPacket(0, status.MPI_SOURCE, END_TOUR_REQ);
+                sendPacket(0, i, END_TOUR_REQ);
             }
 
             participants = 0;
-            changeState(WAITING_FOR_TOUR);
+            changeState(REST);
         }
         }
 

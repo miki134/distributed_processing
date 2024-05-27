@@ -23,8 +23,11 @@ void *startMessageHandlerThread(void *ptr)
             // debug("Ktoś coś prosi. A niech ma!");
             debug("CHECK_REQ");
             
-            if(getState() != IN_TOUR)
+            if(getState() == IN_TOUR)
+                enqueue(&willingTourists, status.MPI_SOURCE);
+            else
                 sendPacket(0, status.MPI_SOURCE, CHECK_ACK);
+            
             
             break;
         }
@@ -41,7 +44,7 @@ void *startMessageHandlerThread(void *ptr)
         }
         case REGISTER_REQ:
         {
-            enqueue(queue, status.MPI_SOURCE);
+            enqueue(&queue, status.MPI_SOURCE);
             break;
         }
         case REGISTER_ACK:

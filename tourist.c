@@ -11,7 +11,8 @@ void tourist(int rank, int peopleCount)
 
     while (true)
     {
-        switch (getState())
+        int cp_state = getState();
+        switch (cp_state)
         {
             case WAITING_FOR_SPOT:
             {

@@ -61,6 +61,7 @@ int main(int argc, char **argv)
     int rank, size, provided;
     MPI_Status status;
 
+
     MPI_Init_thread(&argc, &argv, MPI_THREAD_MULTIPLE, &provided);
     check_thread_support(provided);
     inicjuj_typ_pakietu();
@@ -73,6 +74,9 @@ int main(int argc, char **argv)
     int p = 3; // liczba przewodników
     int g = 5; // limit uczestników obsługiwanych przez przewodnika
     int n = 10; // ilość uczestników chętnych na udział w wycieczce
+    
+    initQueue(&queue, n);
+    initQueue(&willingTourists, n);
 
     if (rank < p) { // Przewodnicy
         guide(rank, n+p, g);

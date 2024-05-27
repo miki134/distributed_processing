@@ -22,6 +22,8 @@ typedef struct {
 // #define FINISH  5
 
 Queue queue;
+Queue willingTourists;
+
 int participants = 0;
 
 enum {
@@ -34,7 +36,7 @@ enum {
     HOSPITAL_INFO_REQ = 7,
     END_TOUR_REQ = 8,
     END_TOUR_ACK = 9
-}
+};
 
 typedef enum { WAITING_FOR_SPOT, WAITING_FOR_REGISTER, WAITING_FOR_TOUR, IN_TOUR, IN_HOSPITAL, REST } state_t;
 
@@ -50,14 +52,13 @@ void sendPacket(packet_t *pkt, int destination, int tag);
 extern state_t state;
 
 extern pthread_mutex_t stateMut;
-extern pthread_mutex_t queueMut;
 extern pthread_mutex_t clkMut;
 
 /* zmiana stanu, obwarowana muteksem */
 void changeState( state_t );
-void getState();
+state_t getState();
 
-void guide(int rank, int peopleCount);
+void guide(int rank, int peopleCount, int peoplePerTour);
 void tourist(int rank, int peopleCount);
 
 #endif

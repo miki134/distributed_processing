@@ -15,11 +15,12 @@ void initQueue(Queue *q, int initialCapacity)
     q->capacity = initialCapacity;
     q->front = 0;
     q->rear = -1;
+    q->queueMut = PTHREAD_MUTEX_INITIALIZER;
 }
 
 void enqueue(Queue *q, int element)
 {
-    pthread_mutex_lock(&queueMut);
+    pthread_mutex_lock(&q->queueMut);
     if (q->size == q->capacity)
     {
         q->capacity *= 2;
@@ -45,12 +46,12 @@ void enqueue(Queue *q, int element)
     q->rear = (q->rear + 1) % q->capacity;
     q->data[q->rear] = element;
     q->size++;
-    pthread_mutex_unlock(&queueMut);
+    pthread_mutex_unlock(&q->queueMuts);
 }
 
 int dequeue(Queue *q)
 {
-    pthread_mutex_lock(&queueMut);
+    pthread_mutex_lock(&q->queueMut);
     if (q->size == 0)
     {
         fprintf(stderr, "Queue underflow\n");
@@ -59,7 +60,7 @@ int dequeue(Queue *q)
     int element = q->data[q->front];
     q->front = (q->front + 1) % q->capacity;
     q->size--;
-    pthread_mutex_unlock(&queueMut);
+    pthread_mutex_unlock(&q->queueMut);
     return element;
 }
 
