@@ -3,11 +3,11 @@
 
 void guide(int rank, int peopleCount, int peoplePerTour)
 {
+    int *actualParticipants = (int *)malloc(peoplePerTour * sizeof(int));
+
     while (true)
     {
-        // MPI_Recv(NULL, 0, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-        // tu zamiast recv pobrać pierwszy komunikat z listy - format w liście musi być SOURCE ID, TYP
-        switch (state)
+        switch (getState())
         {
         case REST:
         {
@@ -16,19 +16,18 @@ void guide(int rank, int peopleCount, int peoplePerTour)
         }
         case WAITING_FOR_TOUR:
         {
-            // todo: pobierz pierwszego z kolejki lub wszystkich (?) - zarejestruj tych co możesz i usuń z kolejki
-
-            while ((participants < peoplePerTour) || queue.size == 0)
+            while ((participants < peoplePerTour) && queue.size != 0)
             {
-                participants++;
-                sendPacket(0, status.MPI_SOURCE, REGISTER_ACK); // wyslij 1 lub wszystkim (?) że akceptujesz go w wycieczce
+                int participant = enqueue(queue);
+                actualParticipants[participants++] = participant;
+                sendPacket(0, participant, REGISTER_ACK);
             }
 
             if (participants.size == peoplePerTour)
             {
-                for (int i = 0; i <= peopleCount; ++i)
+                for (int i = 0; i <= peoplePerTour; ++i)
                 {
-                    sendPacket(0, status.MPI_SOURCE, START_TOUR_ACK);
+                    sendPacket(0, actualParticipants[i], START_TOUR_ACK);
                 }
 
                 changeState(IN_TOUR);
@@ -46,42 +45,6 @@ void guide(int rank, int peopleCount, int peoplePerTour)
             participants = 0;
             changeState(WAITING_FOR_TOUR);
         }
-            // case CHECK_REQ:
-            // {
-            //     if (participants < g)
-            //     {
-            //         sendPacket(0, status.MPI_SOURCE, CHECK_ACK);
-            //     }
-            //     break;
-            // }
-            // case REGISTER_REQ:
-            // {
-            //     if (participants < g)
-            //     {
-            //         participants++;
-            //         sendPacket(0, status.MPI_SOURCE, REGISTER_ACK);
-            //     }
-
-            //     if (participants.size == g)
-            //     {
-            //         for (int i = 0; i <= peopleCount; ++i)
-            //         {
-            //             sendPacket(0, status.MPI_SOURCE, REGISTER_ACK);
-            //         }
-
-            //         changeState(IN_TOUR);
-            //         // sleep(TOUR_TIME);
-
-            //         // for (int i = 0; i <= peopleCount; ++i)
-            //         // {
-            //         //     sendPacket(0, status.MPI_SOURCE, REGISTER_ACK);
-            //         // }
-
-            //         // participants = 0;
-            //         // changeState(REST)
-            //     }
-            //     break;
-            // }
         }
 
         sleep(SEC_IN_STATE);
