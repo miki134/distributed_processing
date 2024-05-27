@@ -1,7 +1,9 @@
 #include "queue.h"
 #include "util.h"
+#include "main.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 void initQueue(Queue *q, int initialCapacity)
 {
@@ -15,7 +17,11 @@ void initQueue(Queue *q, int initialCapacity)
     q->capacity = initialCapacity;
     q->front = 0;
     q->rear = -1;
-    q->queueMut = PTHREAD_MUTEX_INITIALIZER;
+    
+    if (pthread_mutex_init(&q->queueMut, NULL) != 0) {
+        fprintf(stderr, "Mutex initialization failed\n");
+        exit(1);
+    }
 }
 
 void enqueue(Queue *q, int element)
@@ -46,7 +52,7 @@ void enqueue(Queue *q, int element)
     q->rear = (q->rear + 1) % q->capacity;
     q->data[q->rear] = element;
     q->size++;
-    pthread_mutex_unlock(&q->queueMuts);
+    pthread_mutex_unlock(&q->queueMut);
 }
 
 int dequeue(Queue *q)

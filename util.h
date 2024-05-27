@@ -40,9 +40,6 @@ enum {
 
 typedef enum { WAITING_FOR_SPOT, WAITING_FOR_REGISTER, WAITING_FOR_TOUR, IN_TOUR, IN_HOSPITAL, REST } state_t;
 
-#define MAX_GUIDES 10
-
-
 extern MPI_Datatype MPI_PAKIET_T;
 void inicjuj_typ_pakietu();
 

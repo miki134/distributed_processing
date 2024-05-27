@@ -7,7 +7,7 @@ void tourist(int rank, int peopleCount)
 {
     MPI_Status status;
 
-    while (true)
+    while (TRUE)
     {
         int cp_state = getState();
         switch (cp_state)

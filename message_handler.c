@@ -10,7 +10,7 @@ void *startMessageHandlerThread(void *ptr)
     MPI_Status status;
     packet_t pakiet;
 
-    while (true)
+    while (TRUE)
     {
         debug("czekam na recv");
         MPI_Recv(&pakiet, 1, MPI_PAKIET_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
@@ -19,16 +19,13 @@ void *startMessageHandlerThread(void *ptr)
         {
         case CHECK_REQ:
         {
-            //odbiera przewodnik
-            // debug("Ktoś coś prosi. A niech ma!");
             debug("CHECK_REQ");
-            
-            if(getState() == IN_TOUR)
+
+            if (getState() == IN_TOUR)
                 enqueue(&willingTourists, status.MPI_SOURCE);
             else
                 sendPacket(0, status.MPI_SOURCE, CHECK_ACK);
-            
-            
+
             break;
         }
         case CHECK_ACK:
