@@ -50,7 +50,7 @@ void *startMessageHandlerThread(void *ptr)
             // jak otrzymal od tego samego przewodnika CHECK_ACK to usuwa go i przechodzi jakigoś stanu REGISTER_FAILED?
             if(status.MPI_SOURCE == getGuideId())
             {
-                changeState(WAITING_FOR_TOUR);
+                changeRegisterStatus(REGISTER_ACCEPTED);
             }
             break;
         }
@@ -60,12 +60,12 @@ void *startMessageHandlerThread(void *ptr)
             {
                 if (getState() == WAITING_FOR_TOUR)
                 {
-                    changeState(IN_TOUR);
+                    changeRegisterStatus(REGISTER_ACCEPTED);
                     sendPacket(0, status.MPI_SOURCE, START_TOUR_ACK);
                 }
                 else if (getState() == WAITING_FOR_REGISTER)
                 {
-                    changeState(REST);
+                    changeRegisterStatus(REGISTER_FAILED);
                 }
 
             }

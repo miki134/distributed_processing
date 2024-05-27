@@ -7,6 +7,7 @@ MPI_Datatype MPI_PAKIET_T;
  * tutaj w util.c state_t stan (czyli faktyczna definicja)
  */
 state_t state = REST;
+register_status registerStatus = REGISTER_INITIAL;
 int guideId = -1;
 
 /* zamek wokół zmiennej współdzielonej między wątkami.
@@ -17,6 +18,7 @@ int guideId = -1;
 pthread_mutex_t stateMut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t clkMut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t guideIdMut = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t registerStatusMut = PTHREAD_MUTEX_INITIALIZER;
 
 struct tagNames_t
 {
@@ -134,4 +136,18 @@ int getGuideId() {
     int cp_guideId = guideId;
     pthread_mutex_unlock(&guideIdMut);
     return cp_guideId;
+}
+
+void changeRegisterStatus( register_status newStatus ) {
+    pthread_mutex_lock(&registerStatusMut);
+    registerStatus = newStatus;
+    pthread_mutex_unlock(&registerStatusMut);
+
+}
+register_status getRegisterStatus(){
+    pthread_mutex_lock(&registerStatusMut);
+    register_status cp_registerStatus = registerStatus;
+    pthread_mutex_unlock(&registerStatusMut);
+
+    return cp_registerStatus;
 }

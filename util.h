@@ -38,6 +38,8 @@ enum {
 
 typedef enum { WAITING_FOR_SPOT, WAITING_FOR_REGISTER, WAITING_FOR_TOUR, IN_TOUR, IN_HOSPITAL, REST } state_t;
 
+typedef enum { REGISTER_INITIAL, REGISTER_ACCEPTED, REGISTER_FAILED } register_status;
+
 extern MPI_Datatype MPI_PAKIET_T;
 void inicjuj_typ_pakietu();
 
@@ -56,6 +58,9 @@ state_t getState();
 
 void changeGuideId( int );
 int getGuideId();
+
+void changeRegisterStatus( register_status );
+register_status getRegisterStatus();
 
 void guide(int rank, int peopleCount, int peoplePerTour);
 void tourist(int rank, int peopleCount);
