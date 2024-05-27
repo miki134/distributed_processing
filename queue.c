@@ -1,8 +1,13 @@
 #include "queue.h"
+#include "util.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-void initQueue(Queue *q, int initialCapacity) {
+void initQueue(Queue *q, int initialCapacity)
+{
     q->data = (int *)malloc(initialCapacity * sizeof(int));
-    if (q->data == NULL) {
+    if (q->data == NULL)
+    {
         fprintf(stderr, "Memory allocation failed\n");
         exit(1);
     }
@@ -12,21 +17,25 @@ void initQueue(Queue *q, int initialCapacity) {
     q->rear = -1;
 }
 
-void enqueue(Queue *q, int element) {
-    if (q->size == q->capacity) {
+void enqueue(Queue *q, int element)
+{
+    pthread_mutex_lock(&stateMut);
+    if (q->size == q->capacity)
+    {
         q->capacity *= 2;
         int *temp = (int *)realloc(q->data, q->capacity * sizeof(int));
-        if (temp == NULL) {
+        if (temp == NULL)
+        {
             free(q->data);
             fprintf(stderr, "Memory allocation failed\n");
             exit(1);
         }
         q->data = temp;
 
-        // Reorder the elements if the queue was wrapped around
-        if (q->rear < q->front) {
-            if (q->rear + 1 < q->front) {
-                // Move the wrapped around part to the new end of the array
+        if (q->rear < q->front)
+        {
+            if (q->rear + 1 < q->front)
+            {
                 int end_size = q->rear + 1;
                 memmove(q->data + q->capacity - end_size, q->data, end_size * sizeof(int));
                 q->rear = q->capacity - 1;
@@ -36,28 +45,36 @@ void enqueue(Queue *q, int element) {
     q->rear = (q->rear + 1) % q->capacity;
     q->data[q->rear] = element;
     q->size++;
+    pthread_mutex_unlock(&stateMut);
 }
 
-int dequeue(Queue *q) {
-    if (q->size == 0) {
+int dequeue(Queue *q)
+{
+    pthread_mutex_lock(&stateMut);
+    if (q->size == 0)
+    {
         fprintf(stderr, "Queue underflow\n");
         exit(1);
     }
     int element = q->data[q->front];
     q->front = (q->front + 1) % q->capacity;
     q->size--;
+    pthread_mutex_unlock(&stateMut);
     return element;
 }
 
-void printQueue(const Queue *q) {
+void printQueue(const Queue *q)
+{
     printf("size: %d\n", q->size);
-    for (int i = 0; i < q->size; i++) {
+    for (int i = 0; i < q->size; i++)
+    {
         printf("%d ", q->data[(q->front + i) % q->capacity]);
     }
     printf("\n");
 }
 
-void freeQueue(Queue *q) {
+void freeQueue(Queue *q)
+{
     free(q->data);
     q->data = NULL;
     q->size = 0;
@@ -66,18 +83,21 @@ void freeQueue(Queue *q) {
     q->rear = -1;
 }
 
-int example() {
+int example()
+{
     Queue q;
-    initQueue(&q, 10); 
+    initQueue(&q, 10);
     printQueue(&q);
-    
-    for (int i = 0; i < 20; i++) {
+
+    for (int i = 0; i < 20; i++)
+    {
         enqueue(&q, i);
     }
 
     printQueue(&q);
 
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++)
+    {
         printf("Dequeued: %d\n", dequeue(&q));
     }
 

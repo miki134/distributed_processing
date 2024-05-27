@@ -23,10 +23,9 @@ void *startMessageHandlerThread(void *ptr)
             // debug("Ktoś coś prosi. A niech ma!");
             debug("CHECK_REQ");
             
-            if(state != IN_TOUR)
+            if(getState() != IN_TOUR)
                 sendPacket(0, status.MPI_SOURCE, CHECK_ACK);
             
-            enqueue(queue, status.MPI_SOURCE);
             break;
         }
         case CHECK_ACK:
@@ -40,26 +39,27 @@ void *startMessageHandlerThread(void *ptr)
             // sendPacket(0, status.MPI_SOURCE, REGISTER_ACK);
             break;
         }
+        case REGISTER_REQ:
+        {
+            enqueue(queue, status.MPI_SOURCE);
+            break;
+        }
         case REGISTER_ACK:
         {
             // odbiera turysta
-            // jak otrzymal od tego samego przewodnika CHECK_ACK to usuwa go i przechodzi jakigoś stanu REGISTER_FAILED
+            // jak otrzymal od tego samego przewodnika CHECK_ACK to usuwa go i przechodzi jakigoś stanu REGISTER_FAILED?
             break;
         }
         case START_TOUR_REQ:
         {
-        }
-        case START_TOUR_ACK:
-        {
+            sendPacket(0, status.MPI_SOURCE, START_TOUR_ACK);
         }
         case HOSPITAL_INFO_REQ:
         {
         }
         case END_TOUR_REQ:
         {
-        }
-        case END_TOUR_ACK:
-        {
+            sendPacket(0, status.MPI_SOURCE, END_TOUR_ACK);
         }
         default:
             break;

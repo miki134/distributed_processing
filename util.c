@@ -15,6 +15,7 @@ state_t state = REST;
  */
 pthread_mutex_t stateMut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t clkMut = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t queueMut = PTHREAD_MUTEX_INITIALIZER;
 
 struct tagNames_t
 {
@@ -83,4 +84,12 @@ void changeState(state_t newState)
     // }
     state = newState;
     pthread_mutex_unlock(&stateMut);
+}
+
+void getState()
+{
+    pthread_mutex_lock(&stateMut);
+    state_t cp_state = state;
+    pthread_mutex_unlock(&stateMut);
+    return cp_state;
 }
