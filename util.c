@@ -131,6 +131,7 @@ void changeGuideId(int newId) {
 
 int getGuideId() {
     pthread_mutex_lock(&guideIdMut);
-    guideId = newId;
+    int cp_guideId = guideId;
     pthread_mutex_unlock(&guideIdMut);
+    return cp_guideId;
 }
