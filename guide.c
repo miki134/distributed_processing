@@ -1,14 +1,12 @@
 #include "util.h"
 #include "dynamic_array.h"
 
-void guide(int rank, int peopleCount)
+void guide(int rank, int peopleCount, int peoplePerTour)
 {
-    int participants = 0;
-
     while (true)
     {
         // MPI_Recv(NULL, 0, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-
+        //tu zamiast recv pobrać pierwszy komunikat z listy - format w liście musi być SOURCE ID, TYP 
         switch (state)
         {
         case REST:
@@ -25,13 +23,13 @@ void guide(int rank, int peopleCount)
         {
             // todo: pobierz pierwszego z kolejki lub wszystkich (?) - zarejestruj tych co możesz i usuń z kolejki
 
-            if (participants < g)
+            if (participants < peoplePerTour)
             {
                 participants++;
                 sendPacket(0, status.MPI_SOURCE, REGISTER_ACK); // wyslij 1 lub wszystkim (?) że akceptujesz go w wycieczce
             }
 
-            if (participants.size == g)
+            if (participants.size == peoplePerTour)
             {
                 for (int i = 0; i <= peopleCount; ++i)
                 {

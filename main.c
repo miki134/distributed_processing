@@ -68,14 +68,14 @@ int main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    pthread_create( &threadKom, NULL, startMessageHandlerThread , 0);
+    pthread_create( &threadKom, NULL, startMessageHandlerThread, 0);
 
     int p = 3; // liczba przewodników
     int g = 5; // limit uczestników obsługiwanych przez przewodnika
     int n = 10; // ilość uczestników chętnych na udział w wycieczce
 
     if (rank < p) { // Przewodnicy
-        guide(rank, n+p);
+        guide(rank, n+p, g);
     } else { // Turyści
         tourist(rank, n+p);
     }

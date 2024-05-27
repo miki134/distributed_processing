@@ -22,6 +22,7 @@ typedef struct {
 // #define FINISH  5
 
 Queue queue;
+int participants = 0;
 
 enum {
     CHECK_REQ  = 1,
