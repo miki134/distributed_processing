@@ -19,8 +19,6 @@ void *startMessageHandlerThread(void *ptr)
         {
         case CHECK_REQ:
         {
-            // odbiera przewodnik
-            //  debug("Ktoś coś prosi. A niech ma!");
             debug("CHECK_REQ");
 
             if (getState() == IN_TOUR)

@@ -40,6 +40,29 @@ const char *const tag2string(int tag)
     }
     return "<unknown>";
 }
+
+struct stateNames_t
+{
+    const char *name;
+    state_t tag;
+} stateNames[] = {
+    {"Czekanie na miejsce", WAITING_FOR_SPOT},
+    {"Czekanie na zapis na wycieczke", WAITING_FOR_REGISTER},
+    {"Czekanie na wycieczke", WAITING_FOR_TOUR},
+    {"W trakcie wycieczki", IN_TOUR},
+    {"W szpitalu", IN_HOSPITAL},
+    {"REST", REST}};
+
+const char *const state2string(int state)
+{
+    for (int i = 0; i < sizeof(stateNames) / sizeof(struct stateNames_t); i++)
+    {
+        if (stateNames[i].tag == state)
+            return stateNames[i].name;
+    }
+    return "<unknown>";
+}
+
 /* tworzy typ MPI_PAKIET_T
  */
 void inicjuj_typ_pakietu()
@@ -84,6 +107,7 @@ void sendPacket(packet_t *pkt, int destination, int tag)
 
 void changeState(state_t newState)
 {
+    debug("Zmiana stanu z %s do %d\n", state2string(state), state2string(newState));
     pthread_mutex_lock(&stateMut);
     state = newState;
     pthread_mutex_unlock(&stateMut);
