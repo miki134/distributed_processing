@@ -1,6 +1,10 @@
-SOURCES=$(wildcard *.c)
-HEADERS=$(SOURCES:.c=.h)
+# SOURCES=$(wildcard *.c)
+# HEADERS=$(SOURCES:.c=.h)
 #FLAGS=-DDEBUG -g
+
+SOURCES = main.c guide.c message_handler.c queue.c tourist.c util.c
+HEADERS = main.h message_handler.h queue.h util.h
+
 FLAGS=-g
 
 all: main tags

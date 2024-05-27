@@ -31,7 +31,15 @@ void *startMessageHandlerThread(void *ptr)
             pthread_mutex_lock(&clkMut); // todo: czy to nie powinno być w 25 linii?
             clk = max(pakiet.ts, clk) + 1;
             pthread_mutex_unlock(&clkMut);
+            // sendPacket(0, status.MPI_SOURCE, REGISTER_ACK);
             break;
+        case REGISTER_ACK:
+        {
+            break;
+        }
+        case START_TOUR_ACK:
+        {
+        }
         default:
             break;
         }
