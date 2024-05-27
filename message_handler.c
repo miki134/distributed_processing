@@ -34,12 +34,14 @@ void *startMessageHandlerThread(void *ptr)
         case CHECK_ACK:
         {
             // pthread_mutex_lock(&clkMut); ???
-            debug("Dostałem ACK od %d, mam już %d", status.MPI_SOURCE, ackCount);
-            ackCount++;                  /* czy potrzeba tutaj muteksa? Będzie wyścig, czy nie będzie? Zastanówcie się. */
-            pthread_mutex_lock(&clkMut); // todo: czy to nie powinno być w 25 linii?
-            clk = max(pakiet.ts, clk) + 1;
-            pthread_mutex_unlock(&clkMut);
+//            debug("Dostałem ACK od %d, mam już %d", status.MPI_SOURCE, ackCount);
+//            ackCount++;                  /* czy potrzeba tutaj muteksa? Będzie wyścig, czy nie będzie? Zastanówcie się. */
+//            pthread_mutex_lock(&clkMut); // todo: czy to nie powinno być w 25 linii?
+//            clk = max(pakiet.ts, clk) + 1;
+//            pthread_mutex_unlock(&clkMut);
             // sendPacket(0, status.MPI_SOURCE, REGISTER_ACK);
+
+            changeGuideId(status.MPI_SOURCE);
             break;
         }
         case REGISTER_REQ:
@@ -51,18 +53,40 @@ void *startMessageHandlerThread(void *ptr)
         {
             // odbiera turysta
             // jak otrzymal od tego samego przewodnika CHECK_ACK to usuwa go i przechodzi jakigoś stanu REGISTER_FAILED?
+            if(status.MPI_SOURCE == getGuideId())
+            {
+                changeState(WAITING_FOR_TOUR);
+            }
             break;
         }
         case START_TOUR_REQ:
         {
-            sendPacket(0, status.MPI_SOURCE, START_TOUR_ACK);
+            if(status.MPI_SOURCE == getGuideId())
+            {
+                if (getState() == WAITING_FOR_TOUR)
+                {
+                    changeState(IN_TOUR);
+                    sendPacket(0, status.MPI_SOURCE, START_TOUR_ACK);
+                }
+                else if (getState() == WAITING_FOR_REGISTER)
+                {
+                    changeState(REST);
+                }
+
+            }
         }
+
         case HOSPITAL_INFO_REQ:
         {
         }
+
         case END_TOUR_REQ:
         {
-            sendPacket(0, status.MPI_SOURCE, END_TOUR_ACK);
+            if(status.MPI_SOURCE == getGuideId())
+            {
+                changeGuideId(-1);
+                sendPacket(0, status.MPI_SOURCE, END_TOUR_ACK);
+            }
         }
         default:
             break;

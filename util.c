@@ -7,6 +7,7 @@ MPI_Datatype MPI_PAKIET_T;
  * tutaj w util.c state_t stan (czyli faktyczna definicja)
  */
 state_t state = REST;
+int guideId = -1;
 
 /* zamek wokół zmiennej współdzielonej między wątkami.
  * Zwróćcie uwagę, że każdy proces ma osobą pamięć, ale w ramach jednego
@@ -15,6 +16,7 @@ state_t state = REST;
  */
 pthread_mutex_t stateMut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t clkMut = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t guideIdMut = PTHREAD_MUTEX_INITIALIZER;
 
 struct tagNames_t
 {
@@ -86,4 +88,16 @@ state_t getState()
     state_t cp_state = state;
     pthread_mutex_unlock(&stateMut);
     return cp_state;
+}
+
+void changeGuideId(int newId) {
+    pthread_mutex_lock(&guideIdMut);
+    guideId = newId;
+    pthread_mutex_unlock(&guideIdMut);
+}
+
+int getGuideId() {
+    pthread_mutex_lock(&guideIdMut);
+    guideId = newId;
+    pthread_mutex_unlock(&guideIdMut);
 }

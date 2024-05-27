@@ -7,14 +7,12 @@ void tourist(int rank, int peopleCount)
 {
     MPI_Status status;
 
-    int guideId = -1;
-
     while (true)
     {
         int cp_state = getState();
         switch (cp_state)
         {
-            case WAITING_FOR_SPOT:
+            case REST:
             {
                 for (int i = 0; i < peopleCount; i++)
                 {
@@ -23,36 +21,57 @@ void tourist(int rank, int peopleCount)
                         MPI_Send(NULL, 0, MPI_INT, i, CHECK_REQ, MPI_COMM_WORLD);
                     }
                 }
+                changeState(WAITING_FOR_SPOT);
+                break;
+            }
 
-                MPI_Recv(NULL, 0, MPI_INT, MPI_ANY_SOURCE, CHECK_ACK, MPI_COMM_WORLD, &status);
-                guideId = status.MPI_SOURCE;
-                changeState(WAITING_FOR_REGISTER);
-                MPI_Send(NULL, 0, MPI_INT, guideId, REGISTER_REQ, MPI_COMM_WORLD);
+            case WAITING_FOR_SPOT:
+            {
+                int guideId = getGuideId();
+                if(guideId != -1) {
+                    changeState(WAITING_FOR_REGISTER);
+                    sendPacket(0, guideId, REGISTER_REQ);
+                }
+
+
+//                MPI_Recv(NULL, 0, MPI_INT, MPI_ANY_SOURCE, CHECK_ACK, MPI_COMM_WORLD, &status);
+//                guideId = status.MPI_SOURCE;
+//
+//                MPI_Send(NULL, 0, MPI_INT, guideId, REGISTER_REQ, MPI_COMM_WORLD);
                 break;
             }
 
             case WAITING_FOR_REGISTER:
             {
-                MPI_Recv(NULL, 0, MPI_INT, guideId, ANY_TAG, MPI_COMM_WORLD, &status);
-                if(status.MPI_TAG == REGISTER_ACK)
-                {
-                    changeState(WAITING_FOR_TOUR);
-                }
-                else if(status.MPI_TAG == START_TOUR_REQ && status.MPI_SOURCE == guideId)
-                {
-                    changeState(WAITING_FOR_SPOT);
-                }
+//                MPI_Recv(NULL, 0, MPI_INT, guideId, ANY_TAG, MPI_COMM_WORLD, &status);
+//                if(status.MPI_TAG == REGISTER_ACK)
+//                {
+//                    changeState(WAITING_FOR_TOUR);
+//                }
+//                else if(status.MPI_TAG == START_TOUR_REQ && status.MPI_SOURCE == guideId)
+//                {
+//                    changeState(REST);
+//                }
                 break;
             }
 
             case WAITING_FOR_TOUR:
             {
-                if (guideId != -1)
-                {
-                    MPI_Recv(NULL, 0, MPI_INT, guideId, START_TOUR_REQ, MPI_COMM_WORLD, &status);
-                    changeState(IN_TOUR);
-                    MPI_Send(NULL, 0, MPI_INT, status.MPI_SOURCE, START_TOUR_ACK, MPI_COMM_WORLD);
-                }
+//                if (guideId != -1)
+//                {
+//                    MPI_Recv(NULL, 0, MPI_INT, guideId, START_TOUR_REQ, MPI_COMM_WORLD, &status);
+//                    changeState(IN_TOUR);
+//                    MPI_Send(NULL, 0, MPI_INT, status.MPI_SOURCE, START_TOUR_ACK, MPI_COMM_WORLD);
+//                }
+                break;
+            }
+
+            case IN_HOSPITAL:
+            {
+                sendPacket(0, MPI_ANY_SOURCE, HOSPITAL_INFO_REQ);
+                sleep(20);
+                changeGuideId(-1);
+                changeState(REST);
                 break;
             }
 
@@ -64,23 +83,13 @@ void tourist(int rank, int peopleCount)
                 if (randomNumber == 1)
                 {
                     changeState(IN_HOSPITAL); // tutaj dał bym kolejny case: IN_HOSPITAL i tam sleep - a bedzie dostawać wiadomości skolejkowane na drugim wątku
-                    MPI_Send(NULL, 0, MPI_INT, MPI_ANY_SOURCE, HOSPITAL_INFO_REQ, MPI_COMM_WORLD);
                 }
 
-                // case IN_HOSPITAL:
+                if(getGuideId() == -1)
+                {
+                    changeState(REST);
+                }
 
-                MPI_Recv(NULL, 0, MPI_INT, guideId, END_TOUR_REQ, MPI_COMM_WORLD, &status);
-                changeState(REST);
-                guideId = -1;
-                MPI_Send(NULL, 0, MPI_INT, guideId, END_TOUR_ACK, MPI_COMM_WORLD);
-
-                break;
-            }
-
-            case REST:
-            {
-                sleep(10);
-                changeState(WAITING_FOR_REGISTER);
                 break;
             }
         }

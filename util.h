@@ -53,10 +53,14 @@ extern state_t state;
 
 extern pthread_mutex_t stateMut;
 extern pthread_mutex_t clkMut;
+extern pthread_mutex_t guideIdMut;
 
 /* zmiana stanu, obwarowana muteksem */
 void changeState( state_t );
 state_t getState();
+
+void changeGuideId( int );
+int getGuideId();
 
 void guide(int rank, int peopleCount, int peoplePerTour);
 void tourist(int rank, int peopleCount);
