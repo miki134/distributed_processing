@@ -9,7 +9,7 @@ void tourist(int rank, int peopleCount)
 
     int guideId = -1;
 
-    while (true)
+    while (TRUE)
     {
         int cp_state = getState();
         switch (cp_state)

@@ -1,13 +1,12 @@
 #include "util.h"
 #include "dynamic_array.h"
 
-#include <stdbool.h>
 
 void guide(int rank, int peopleCount, int peoplePerTour)
 {
     int *actualParticipants = (int *)malloc(peoplePerTour * sizeof(int));
 
-    while (true)
+    while (TRUE)
     {
         int cp_state = getState();
         switch (cp_state)
@@ -41,6 +40,7 @@ void guide(int rank, int peopleCount, int peoplePerTour)
 
                 changeState(IN_TOUR);
             }
+            break;
         }
         case IN_TOUR:
         {
@@ -53,8 +53,12 @@ void guide(int rank, int peopleCount, int peoplePerTour)
 
             participants = 0;
             changeState(REST);
+            break;
         }
+        default:
+            break;
         }
 
         sleep(SEC_IN_STATE);
     }
+}

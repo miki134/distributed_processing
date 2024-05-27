@@ -20,8 +20,17 @@ struct tagNames_t
 {
     const char *name;
     int tag;
-} tagNames[] = {{"pakiet aplikacyjny", APP_PKT}, {"finish", FINISH}, {"potwierdzenie", ACK}, {"prośbę o sekcję krytyczną", REQUEST}, {"zwolnienie sekcji krytycznej", RELEASE}};
-
+} tagNames[] = {
+    {"Wolne miejsca na wycieczce", CHECK_REQ},
+    {"Jest wolne miejsce", CHECK_ACK},
+    {"Rejestracja na wycieczke", REGISTER_REQ},
+    {"Akceptacja rejestracji na wycieczke", REGISTER_ACK},
+    {"Rozpoczecie wycieczki", START_TOUR_REQ},
+    {"Akceptacja rozpoczecia wycieczki", START_TOUR_ACK},
+    {"Pobicie przez kibiców legii", HOSPITAL_INFO_REQ},
+    {"Koniec wycieczki", END_TOUR_REQ},
+    {"Akceptacja konca wycieczki", END_TOUR_ACK}};
+    
 const char *const tag2string(int tag)
 {
     for (int i = 0; i < sizeof(tagNames) / sizeof(struct tagNames_t); i++)
