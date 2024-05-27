@@ -43,6 +43,16 @@ void tourist(int rank, int peopleCount)
 
             case WAITING_FOR_REGISTER:
             {
+                if (getRegisterStatus() == REGISTER_ACCEPTED)
+                {
+                    changeState(WAITING_FOR_TOUR);
+                    changeRegisterStatus(REGISTER_INITIAL);
+                }
+                else if (getRegisterStatus() == REGISTER_FAILED)
+                {
+                    changeState(REST);
+                    changeRegisterStatus(REGISTER_INITIAL);
+                }
 //                MPI_Recv(NULL, 0, MPI_INT, guideId, ANY_TAG, MPI_COMM_WORLD, &status);
 //                if(status.MPI_TAG == REGISTER_ACK)
 //                {
@@ -57,6 +67,11 @@ void tourist(int rank, int peopleCount)
 
             case WAITING_FOR_TOUR:
             {
+                if (getRegisterStatus() == REGISTER_ACCEPTED)
+                {
+                    changeState(IN_TOUR);
+                    changeRegisterStatus(REGISTER_INITIAL);
+                }
 //                if (guideId != -1)
 //                {
 //                    MPI_Recv(NULL, 0, MPI_INT, guideId, START_TOUR_REQ, MPI_COMM_WORLD, &status);
@@ -77,12 +92,12 @@ void tourist(int rank, int peopleCount)
 
             case IN_TOUR:
             {
-                srand(time(NULL));
-                int randomNumber = rand() % 10 + 1;
+//                srand(time(NULL));
+//                int randomNumber = rand() % 10 + 1;
 
-                if (randomNumber == 1)
+                if (rank == peopleCount - 1)
                 {
-                    changeState(IN_HOSPITAL); // tutaj dał bym kolejny case: IN_HOSPITAL i tam sleep - a bedzie dostawać wiadomości skolejkowane na drugim wątku
+                    changeState(IN_HOSPITAL);
                 }
 
                 if(getGuideId() == -1)
@@ -93,5 +108,6 @@ void tourist(int rank, int peopleCount)
                 break;
             }
         }
+        sleep(SEC_IN_STATE);
     }
 }
