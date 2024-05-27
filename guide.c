@@ -1,10 +1,10 @@
 #include "util.h"
 #include "dynamic_array.h"
 
-
 void guide(int rank, int peopleCount, int peoplePerTour)
 {
     int *actualParticipants = (int *)malloc(peoplePerTour * sizeof(int));
+    int participants = 0;
 
     while (TRUE)
     {
@@ -35,7 +35,10 @@ void guide(int rank, int peopleCount, int peoplePerTour)
             {
                 for (int i = 0; i <= peopleCount; ++i)
                 {
-                    sendPacket(0, i, START_TOUR_ACK);
+                    if (i != rank)
+                    {
+                        sendPacket(0, i, START_TOUR_ACK);
+                    }
                 }
 
                 changeState(IN_TOUR);
@@ -48,7 +51,10 @@ void guide(int rank, int peopleCount, int peoplePerTour)
 
             for (int i = 0; i <= peopleCount; ++i)
             {
-                sendPacket(0, i, END_TOUR_REQ);
+                if (i != rank)
+                {
+                    sendPacket(0, i, END_TOUR_REQ);
+                }
             }
 
             participants = 0;

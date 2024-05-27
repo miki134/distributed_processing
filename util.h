@@ -24,8 +24,6 @@ typedef struct {
 Queue queue;
 Queue willingTourists;
 
-int participants = 0;
-
 enum {
     CHECK_REQ  = 1,
     CHECK_ACK = 2,

@@ -19,8 +19,6 @@ void *startMessageHandlerThread(void *ptr)
         {
         case CHECK_REQ:
         {
-            debug("CHECK_REQ");
-
             if (getState() == IN_TOUR)
                 enqueue(&willingTourists, status.MPI_SOURCE);
             else
