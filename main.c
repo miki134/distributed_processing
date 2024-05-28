@@ -56,9 +56,14 @@ void check_thread_support(int provided)
     }
 }
 
+
+int p = 2; // liczba przewodników
+int g = 2; // limit uczestników obsługiwanych przez przewodnika
+int n = 6; // ilość uczestników chętnych na udział w wycieczce
+
 int main(int argc, char **argv)
 {
-    int rank, size, provided;
+    int size, provided;
     MPI_Status status;
 
 
@@ -68,12 +73,11 @@ int main(int argc, char **argv)
     
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
+    
+    // state = REST;
 
     pthread_create( &threadKom, NULL, startMessageHandlerThread, 0);
 
-    int p = 3; // liczba przewodników
-    int g = 5; // limit uczestników obsługiwanych przez przewodnika
-    int n = 10; // ilość uczestników chętnych na udział w wycieczce
     
     initQueue(&queue, n);
     initQueue(&willingTourists, n);

@@ -18,5 +18,10 @@ int dequeue(Queue *q);
 void printQueue(const Queue *q);
 void freeQueue(Queue *q);
 int example();
+int getSize(Queue *q);
+
+void lockMutex(Queue *q);
+void unlockMutex(Queue *q);
+
 
 #endif //QUEUE_h

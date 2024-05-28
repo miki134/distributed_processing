@@ -15,11 +15,12 @@
 #define SEC_IN_STATE 1
 #define STATE_CHANGE_PROB 10
 
+#define 
+
 #define HOSPITAL_TIME 5
 #define TOUR_TIME 10
 
 #define ROOT 0
-// #define DEBUG
 
 /* tutaj TYLKO zapowiedzi - definicje w main.c */
 extern int rank;
@@ -27,10 +28,6 @@ extern int size;
 extern int ackCount;
 extern pthread_t threadKom;
 extern int clk;
-
-extern int p;
-extern int g;
-extern int n;
 
 /* macro debug - działa jak printf, kiedy zdefiniowano
    DEBUG, kiedy DEBUG niezdefiniowane działa jak instrukcja pusta 

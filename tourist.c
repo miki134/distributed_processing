@@ -10,6 +10,7 @@ void tourist(int rank, int peopleCount)
     while (TRUE)
     {
         int cp_state = getState();
+        println("TURIST: %s", state2string(cp_state));
         switch (cp_state)
         {
             case REST:
@@ -18,7 +19,8 @@ void tourist(int rank, int peopleCount)
                 {
                     if (i != rank)
                     {
-                        MPI_Send(NULL, 0, MPI_INT, i, CHECK_REQ, MPI_COMM_WORLD);
+                        sendPacket(0, i, CHECK_REQ);
+                        // MPI_Send(NULL, 0, MPI_INT, i, CHECK_REQ, MPI_COMM_WORLD);
                     }
                 }
                 changeState(WAITING_FOR_SPOT);
@@ -43,6 +45,7 @@ void tourist(int rank, int peopleCount)
 
             case WAITING_FOR_REGISTER:
             {
+                // println("%d", getRegisterStatus());
                 if (getRegisterStatus() == REGISTER_ACCEPTED)
                 {
                     changeState(WAITING_FOR_TOUR);
@@ -67,10 +70,10 @@ void tourist(int rank, int peopleCount)
 
             case WAITING_FOR_TOUR:
             {
-                if (getRegisterStatus() == REGISTER_ACCEPTED)
+                // if (getRegisterStatus() == REGISTER_ACCEPTED)
                 {
                     changeState(IN_TOUR);
-                    changeRegisterStatus(REGISTER_INITIAL);
+                    // changeRegisterStatus(REGISTER_INITIAL);
                 }
 //                if (guideId != -1)
 //                {
@@ -94,7 +97,7 @@ void tourist(int rank, int peopleCount)
             {
 //                srand(time(NULL));
 //                int randomNumber = rand() % 10 + 1;
-
+                println("%s %d", state2string(IN_TOUR), getGuideId());
                 if (rank == peopleCount - 1)
                 {
                     changeState(IN_HOSPITAL);
@@ -103,6 +106,7 @@ void tourist(int rank, int peopleCount)
                 if(getGuideId() == -1)
                 {
                     changeState(REST);
+                    changeRegisterStatus(REGISTER_INITIAL);
                 }
 
                 break;

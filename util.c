@@ -9,6 +9,8 @@ MPI_Datatype MPI_PAKIET_T;
 state_t state = REST;
 register_status registerStatus = REGISTER_INITIAL;
 int guideId = -1;
+Queue queue;
+Queue willingTourists;
 
 /* zamek wokół zmiennej współdzielonej między wątkami.
  * Zwróćcie uwagę, że każdy proces ma osobą pamięć, ale w ramach jednego
@@ -111,7 +113,7 @@ void sendPacket(packet_t *pkt, int destination, int tag)
 
 void changeState(state_t newState)
 {
-    debug("Zmiana stanu z %s do %d\n", state2string(state), state2string(newState));
+    debug("Zmiana stanu z %s do %s\n", state2string(state), state2string(newState));
     pthread_mutex_lock(&stateMut);
     state = newState;
     pthread_mutex_unlock(&stateMut);

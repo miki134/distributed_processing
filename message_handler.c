@@ -12,17 +12,17 @@ void *startMessageHandlerThread(void *ptr)
 
     while (TRUE)
     {
-        debug("czekam na recv");
         MPI_Recv(&pakiet, 1, MPI_PAKIET_T, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-
         switch (status.MPI_TAG)
         {
         case CHECK_REQ:
         {
-            if (getState() == IN_TOUR)
-                enqueue(&willingTourists, status.MPI_SOURCE);
-            else
-                sendPacket(0, status.MPI_SOURCE, CHECK_ACK);
+            if(rank < p) {
+                if (getState() == IN_TOUR)
+                    enqueue(&willingTourists, status.MPI_SOURCE);
+                else
+                    sendPacket(0, status.MPI_SOURCE, CHECK_ACK);
+            }
 
             break;
         }
@@ -35,38 +35,58 @@ void *startMessageHandlerThread(void *ptr)
 //            clk = max(pakiet.ts, clk) + 1;
 //            pthread_mutex_unlock(&clkMut);
             // sendPacket(0, status.MPI_SOURCE, REGISTER_ACK);
-
-            changeGuideId(status.MPI_SOURCE);
+            if(getGuideId() == -1)
+            {
+                changeGuideId(status.MPI_SOURCE);
+            }
+            
             break;
         }
         case REGISTER_REQ:
         {
-            enqueue(&queue, status.MPI_SOURCE);
+            int source = status.MPI_SOURCE;
+            debug("status.MPI_TAG: %s %d %d", tag2string(status.MPI_TAG), getSize(&queue), source);
+            lockMutex(&queue);
+            // printQueue(&queue);
+            enqueue(&queue, source);
+            // printQueue(&queue);
+            unlockMutex(&queue);
             break;
         }
         case REGISTER_ACK:
         {
             // odbiera turysta
             // jak otrzymal od tego samego przewodnika CHECK_ACK to usuwa go i przechodzi jakigoś stanu REGISTER_FAILED?
+            // println("%s %s %d %d %d", tag2string(REGISTER_ACK), state2string(state), status.MPI_SOURCE, getGuideId(), getRegisterStatus());
             if(status.MPI_SOURCE == getGuideId())
             {
-                changeRegisterStatus(REGISTER_ACCEPTED);
+                // println("JEST");
+                // changeRegisterStatus(REGISTER_ACCEPTED);
+                changeState(WAITING_FOR_TOUR);
+                // println("%d",getRegisterStatus());
+
             }
             break;
         }
         case START_TOUR_REQ:
         {
+            // debug("status.PI_TAG: %s", tag2string(status.MPI_TAG));
+            println("START_TOUR_REQ %d", getRegisterStatus());
             if(status.MPI_SOURCE == getGuideId())
             {
+                debug("status.PI_TAG: %s", tag2string(getState()));
+
                 if (getState() == WAITING_FOR_TOUR)
                 {
                     changeRegisterStatus(REGISTER_ACCEPTED);
                     sendPacket(0, status.MPI_SOURCE, START_TOUR_ACK);
                 }
-                else if (getState() == WAITING_FOR_REGISTER)
+                else if (getState() == WAITING_FOR_REGISTER || getState() == WAITING_FOR_SPOT)
                 {
                     changeRegisterStatus(REGISTER_FAILED);
+                    changeGuideId(-1);
                 }
+                
 
             }
         }
@@ -86,5 +106,7 @@ void *startMessageHandlerThread(void *ptr)
         default:
             break;
         }
+
+        
     }
 }

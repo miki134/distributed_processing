@@ -21,8 +21,8 @@ typedef struct {
 // #define APP_PKT 4
 // #define FINISH  5
 
-Queue queue;
-Queue willingTourists;
+extern Queue queue;
+extern Queue willingTourists;
 
 enum {
     CHECK_REQ  = 1,
