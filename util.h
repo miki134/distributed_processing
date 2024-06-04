@@ -51,6 +51,12 @@ extern state_t state;
 extern pthread_mutex_t stateMut;
 extern pthread_mutex_t clkMut;
 extern pthread_mutex_t guideIdMut;
+extern pthread_mutex_t registerStatusMut;
+extern pthread_mutex_t tagPrintMut;
+extern pthread_mutex_t statePrintMut;
+
+const char *const state2string(int state);
+const char *const tag2string(int tag);
 
 /* zmiana stanu, obwarowana muteksem */
 void changeState( state_t );

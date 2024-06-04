@@ -19,6 +19,7 @@ void printQueue(const Queue *q);
 void freeQueue(Queue *q);
 int example();
 int getSize(Queue *q);
+void removeElement(Queue *q, int x);
 
 void lockMutex(Queue *q);
 void unlockMutex(Queue *q);

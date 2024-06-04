@@ -27,7 +27,7 @@ void initQueue(Queue *q, int initialCapacity)
 void enqueue(Queue *q, int element)
 {
     // printQueue(q);
-    // pthread_mutex_lock(&q->queueMut);
+    pthread_mutex_lock(&q->queueMut);
     if (q->size == q->capacity)
     {
         q->capacity *= 2;
@@ -53,13 +53,13 @@ void enqueue(Queue *q, int element)
     q->rear = (q->rear + 1) % q->capacity;
     q->data[q->rear] = element;
     q->size++;
-    // pthread_mutex_unlock(&q->queueMut);
+    pthread_mutex_unlock(&q->queueMut);
 }
 
 int dequeue(Queue *q)
 {
     // printQueue(q);
-    // pthread_mutex_lock(&q->queueMut);
+    pthread_mutex_lock(&q->queueMut);
     if (q->size == 0)
     {
         fprintf(stderr, "Queue underflow\n");
@@ -68,7 +68,7 @@ int dequeue(Queue *q)
     int element = q->data[q->front];
     q->front = (q->front + 1) % q->capacity;
     q->size--;
-    // pthread_mutex_unlock(&q->queueMut);
+    pthread_mutex_unlock(&q->queueMut);
     return element;
 }
 
@@ -112,6 +112,48 @@ void unlockMutex(Queue *q)
     pthread_mutex_unlock(&q->queueMut);
 }
 
+// void removeElement(Queue *q, int x)
+// {
+//     pthread_mutex_lock(&q->queueMut);
+//     int found = 0;
+//     for (int i = 0; i < q->size; i++)
+//     {
+//         int idx = (q->front + i) % q->capacity;
+//         if (q->data[idx] == x)
+//         {
+//             found = 1;
+//         }
+//         if (found && i < q->size - 1)
+//         {
+//             int nextIdx = (q->front + i + 1) % q->capacity;
+//             q->data[idx] = q->data[nextIdx];
+//         }
+//     }
+//     if (found)
+//     {
+//         q->rear = (q->rear - 1 + q->capacity) % q->capacity;
+//         q->size--;
+//     }
+//     pthread_mutex_unlock(&q->queueMut);
+// }
+void removeElement(Queue *q, int x)
+{
+    pthread_mutex_lock(&q->queueMut);
+    int newSize = 0;
+    for (int i = 0; i < q->size; i++)
+    {
+        int idx = (q->front + i) % q->capacity;
+        if (q->data[idx] != x)
+        {
+            q->data[(q->front + newSize) % q->capacity] = q->data[idx];
+            newSize++;
+        }
+    }
+    q->size = newSize;
+    q->rear = (q->front + q->size - 1) % q->capacity;
+    pthread_mutex_unlock(&q->queueMut);
+}
+
 int example()
 {
     Queue q;
@@ -122,7 +164,14 @@ int example()
     {
         enqueue(&q, i);
     }
+    for (int i = 0; i < 20; i++)
+    {
+        enqueue(&q, i);
+    }
+    printQueue(&q);
 
+    removeElement(&q, 123);
+    removeElement(&q,4);
     printQueue(&q);
 
     for (int i = 0; i < 10; i++)

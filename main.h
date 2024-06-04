@@ -15,7 +15,7 @@
 #define SEC_IN_STATE 1
 #define STATE_CHANGE_PROB 10
 
-#define HOSPITAL_TIME 5
+#define HOSPITAL_TIME 15
 #define TOUR_TIME 10
 
 #define ROOT 0

@@ -16,8 +16,15 @@ void guide(int rank, int peopleCount, int peoplePerTour)
         {
             // debug("willingTourists: %d", willingTourists.size);
             int size = getSize(&willingTourists);
+            if (size > 0)
+            {
+                println("rank: %d", rank);
+                printQueue(&willingTourists);
+            }
+
             for (int i = 0; i < size; ++i)
             {
+                debug("dequeue: %d", i);
                 int id = dequeue(&willingTourists);
                 sendPacket(0, id, CHECK_ACK);
             }
@@ -29,7 +36,7 @@ void guide(int rank, int peopleCount, int peoplePerTour)
         {
             int size = getSize(&queue);
             debug("WAITING_FOR_TOUR: %d %d %d", size, participants, peoplePerTour);
-            lockMutex(&queue);
+            // lockMutex(&queue);
             // printQueue(&queue);
             while ((participants < peoplePerTour) && size != 0)
             {
@@ -37,7 +44,8 @@ void guide(int rank, int peopleCount, int peoplePerTour)
                 int participant = dequeue(&queue);
                 actualParticipants[participants++] = participant;
                 sendPacket(0, participant, REGISTER_ACK);
-                println("%d jest na wycieczce z %d", rank, participant);
+                println("%d będzie na wycieczce z %d", rank, participant);
+                size = getSize(&queue);
             }
 
             if (participants == peoplePerTour)
@@ -55,7 +63,7 @@ void guide(int rank, int peopleCount, int peoplePerTour)
                 changeState(IN_TOUR);
             }
 
-            unlockMutex(&queue);
+            // unlockMutex(&queue);
 
             break;
         }
@@ -65,7 +73,6 @@ void guide(int rank, int peopleCount, int peoplePerTour)
             // lockMutex(&queue);
             // printQueue(&queue);
             // unlockMutex(&queue);
-
 
             sleep(TOUR_TIME);
 

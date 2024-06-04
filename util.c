@@ -21,13 +21,15 @@ pthread_mutex_t stateMut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t clkMut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t guideIdMut = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t registerStatusMut = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t tagPrintMut = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t statePrintMut = PTHREAD_MUTEX_INITIALIZER;
 
 struct tagNames_t
 {
     const char *name;
     int tag;
 } tagNames[] = {
-    {"Wolne miejsca na wycieczce", CHECK_REQ},
+    {"Czy wolne miejsca na wycieczce", CHECK_REQ},
     {"Jest wolne miejsce", CHECK_ACK},
     {"Rejestracja na wycieczke", REGISTER_REQ},
     {"Akceptacja rejestracji na wycieczke", REGISTER_ACK},
@@ -36,21 +38,25 @@ struct tagNames_t
     {"Pobicie przez kibiców legii", HOSPITAL_INFO_REQ},
     {"Koniec wycieczki", END_TOUR_REQ},
     {"Akceptacja konca wycieczki", END_TOUR_ACK}};
-    
+
 const char *const tag2string(int tag)
 {
+    pthread_mutex_lock(&tagPrintMut);
+    char *tagName = "<unknown>";
     for (int i = 0; i < sizeof(tagNames) / sizeof(struct tagNames_t); i++)
     {
         if (tagNames[i].tag == tag)
-            return tagNames[i].name;
+            tagName = tagNames[i].name;
     }
-    return "<unknown>";
+    pthread_mutex_unlock(&tagPrintMut);
+
+    return tagName;
 }
 
 struct stateNames_t
 {
     const char *name;
-    state_t tag;
+    state_t state;
 } stateNames[] = {
     {"Czekanie na miejsce", WAITING_FOR_SPOT},
     {"Czekanie na zapis na wycieczke", WAITING_FOR_REGISTER},
@@ -61,12 +67,18 @@ struct stateNames_t
 
 const char *const state2string(int state)
 {
+    pthread_mutex_lock(&statePrintMut);
+    char *stateName = "<unknown>";
+    // println("1 %s", stateName);
     for (int i = 0; i < sizeof(stateNames) / sizeof(struct stateNames_t); i++)
     {
-        if (stateNames[i].tag == state)
-            return stateNames[i].name;
+        if (stateNames[i].state == state)
+            stateName = stateNames[i].name;
+        // println("2 %s", stateName);
     }
-    return "<unknown>";
+    pthread_mutex_unlock(&statePrintMut);
+    // println("3 %s", stateName);
+    return stateName;
 }
 
 /* tworzy typ MPI_PAKIET_T
@@ -127,26 +139,29 @@ state_t getState()
     return cp_state;
 }
 
-void changeGuideId(int newId) {
+void changeGuideId(int newId)
+{
     pthread_mutex_lock(&guideIdMut);
     guideId = newId;
     pthread_mutex_unlock(&guideIdMut);
 }
 
-int getGuideId() {
+int getGuideId()
+{
     pthread_mutex_lock(&guideIdMut);
     int cp_guideId = guideId;
     pthread_mutex_unlock(&guideIdMut);
     return cp_guideId;
 }
 
-void changeRegisterStatus( register_status newStatus ) {
+void changeRegisterStatus(register_status newStatus)
+{
     pthread_mutex_lock(&registerStatusMut);
     registerStatus = newStatus;
     pthread_mutex_unlock(&registerStatusMut);
-
 }
-register_status getRegisterStatus(){
+register_status getRegisterStatus()
+{
     pthread_mutex_lock(&registerStatusMut);
     register_status cp_registerStatus = registerStatus;
     pthread_mutex_unlock(&registerStatusMut);
