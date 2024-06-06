@@ -31,7 +31,7 @@ int ackCount = 0;
 int clk = 0;
 
 int p = 2; // liczba przewodników
-int g = 2; // limit uczestników obsługiwanych przez przewodnika
+int g = 3; // limit uczestników obsługiwanych przez przewodnika
 int n = 0; // ilość uczestników chętnych na udział w wycieczce
 
 int main(int argc, char **argv)

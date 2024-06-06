@@ -24,6 +24,6 @@ clean:
 #	ctags -R .
 
 run: main Makefile tags
-	mpirun -np 8 ./main
+	mpirun -np 12 ./main
 # mpirun -oversubscribe -np 2 ./main
 # mpirun -oversubscribe -np 2 ./main

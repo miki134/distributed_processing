@@ -3,7 +3,8 @@
 
 void guide(int rank, int peopleCount, int peoplePerTour)
 {
-    int *actualParticipants = (int *)malloc(peoplePerTour * sizeof(int));
+    Queue actualParticipants;
+    initQueue(&actualParticipants, peopleCount);
     int participants = 0;
 
     while (TRUE)
@@ -16,11 +17,11 @@ void guide(int rank, int peopleCount, int peoplePerTour)
         {
             // debug("willingTourists: %d", willingTourists.size);
             int size = getSize(&willingTourists);
-            if (size > 0)
-            {
-                println("rank: %d", rank);
-                printQueue(&willingTourists);
-            }
+            // if (size > 0)
+            // {
+            //     println("rank: %d", rank);
+            //     printQueue(&willingTourists);
+            // }
 
             for (int i = 0; i < size; ++i)
             {
@@ -42,7 +43,8 @@ void guide(int rank, int peopleCount, int peoplePerTour)
             {
                 debug("dequeue: %d", size);
                 int participant = dequeue(&queue);
-                actualParticipants[participants++] = participant;
+                participants++;
+                enqueue(&actualParticipants, participant);
                 sendPacket(0, participant, REGISTER_ACK);
                 println("%d będzie na wycieczce z %d", rank, participant);
                 size = getSize(&queue);
@@ -73,7 +75,9 @@ void guide(int rank, int peopleCount, int peoplePerTour)
             // lockMutex(&queue);
             // printQueue(&queue);
             // unlockMutex(&queue);
-
+            char * str = toString(&actualParticipants);
+            println("Na wycieczce z: %s", str);
+            // printQueue(&actualParticipants);
             sleep(TOUR_TIME);
 
             for (int i = 0; i < peopleCount; ++i)
@@ -89,6 +93,11 @@ void guide(int rank, int peopleCount, int peoplePerTour)
             freeQueue(&queue);
             initQueue(&queue, peopleCount);
             unlockMutex(&queue);
+
+            lockMutex(&actualParticipants);
+            freeQueue(&actualParticipants);
+            initQueue(&actualParticipants, peopleCount);
+            unlockMutex(&actualParticipants);
 
             changeState(REST);
             break;

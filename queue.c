@@ -17,8 +17,9 @@ void initQueue(Queue *q, int initialCapacity)
     q->capacity = initialCapacity;
     q->front = 0;
     q->rear = -1;
-    
-    if (pthread_mutex_init(&q->queueMut, NULL) != 0) {
+
+    if (pthread_mutex_init(&q->queueMut, NULL) != 0)
+    {
         fprintf(stderr, "Mutex initialization failed\n");
         exit(1);
     }
@@ -75,23 +76,54 @@ int dequeue(Queue *q)
 void printQueue(const Queue *q)
 {
     // pthread_mutex_lock(&q->queueMut);
-    printf("size: %d\n", q->size);
-    for (int i = 0; i < q->size; i++)
+    pthread_mutex_lock(&q->queueMut);
+    if (q->size > 0)
     {
-        printf("%d ", q->data[(q->front + i) % q->capacity]);
+        printf("size: %d -- ", q->size);
+        for (int i = 0; i < q->size; i++)
+        {
+            printf("%d ", q->data[(q->front + i) % q->capacity]);
+        }
+        printf("\n");
     }
-    printf("\n");
-    // pthread_mutex_unlock(&q->queueMut);
+    pthread_mutex_unlock(&q->queueMut);
+}
+
+char* toString(const Queue *q) {
+    pthread_mutex_lock(&q->queueMut);
+
+    int buffer_size = 50 + (q->size * 12);
+    char *result = (char *)malloc(buffer_size);
+    if (!result) {
+        pthread_mutex_unlock(&q->queueMut);
+        return NULL;
+    }
+
+    // int offset = snprintf(result, buffer_size, "size: %d -- ", q->size);
+    int offset = snprintf(result, buffer_size, "");
+    for (int i = 0; i < q->size; i++) {
+        offset += snprintf(result + offset, buffer_size - offset, "%d ", q->data[(q->front + i) % q->capacity]);
+    }
+    snprintf(result + offset, buffer_size - offset, "");
+
+    pthread_mutex_unlock(&q->queueMut);
+
+    return result;
 }
 
 void freeQueue(Queue *q)
 {
-    free(q->data);
-    q->data = NULL;
-    q->size = 0;
-    q->capacity = 0;
-    q->front = 0;
-    q->rear = -1;
+    // pthread_mutex_lock(&q->queueMut);
+    if (q->size > 0)
+    {
+        free(q->data);
+        q->data = NULL;
+        q->size = 0;
+        q->capacity = 0;
+        q->front = 0;
+        q->rear = -1;
+    }
+    // pthread_mutex_unlock(&q->queueMut);
 }
 
 int getSize(Queue *q)
@@ -171,7 +203,7 @@ int example()
     printQueue(&q);
 
     removeElement(&q, 123);
-    removeElement(&q,4);
+    removeElement(&q, 4);
     printQueue(&q);
 
     for (int i = 0; i < 10; i++)

@@ -8,7 +8,7 @@ void tourist(int rank, int peopleCount)
     while (TRUE)
     {
         int cp_state = getState();
-        // println("TURIST: %s", state2string(cp_state));
+        println("TURIST: %s", state2string(cp_state));
         switch (cp_state)
         {
         case REST:
@@ -68,7 +68,7 @@ void tourist(int rank, int peopleCount)
 
         case WAITING_FOR_TOUR:
         {
-            // if (getRegisterStatus() == REGISTER_ACCEPTED)
+            if (getRegisterStatus() == REGISTER_ACCEPTED)
             {
                 changeState(IN_TOUR);
                 // changeRegisterStatus(REGISTER_INITIAL);
@@ -102,10 +102,11 @@ void tourist(int rank, int peopleCount)
 
         case IN_TOUR:
         {
-            //                srand(time(NULL));
-            //                int randomNumber = rand() % 10 + 1;
+            srand(time(NULL));
+            int randomNumber = rand() % 20 + 1;
+            
             // println("%s %d", state2string(IN_TOUR), getGuideId());
-            if (rank == peopleCount - 1)
+            if (rank == randomNumber)
             {
                 changeState(IN_HOSPITAL);
             }

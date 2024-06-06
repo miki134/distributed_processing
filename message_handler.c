@@ -33,8 +33,8 @@ void *startMessageHandlerThread(void *ptr)
                     removeElement(&willingTourists, status.MPI_SOURCE);
                     enqueue(&willingTourists, status.MPI_SOURCE);
 
-                    printQueue(&willingTourists);
-                    println("rank %d kolejkuje %d", rank, status.MPI_SOURCE);
+                    // println("rank %d kolejkuje %d - cała kolejka: %s", rank, status.MPI_SOURCE, toString(&willingTourists));
+                    // printQueue(&willingTourists);
                 }
                 else
                     sendPacket(0, status.MPI_SOURCE, CHECK_ACK);
@@ -54,6 +54,7 @@ void *startMessageHandlerThread(void *ptr)
 
             if (getGuideId() == -1)
             {
+                // println("CHECK_ACK od %d", status.MPI_SOURCE);
                 changeGuideId(status.MPI_SOURCE);
             }
             // return;
@@ -88,12 +89,11 @@ void *startMessageHandlerThread(void *ptr)
         case START_TOUR_REQ:
         {
             // debug("status.PI_TAG: %s", tag2string(status.MPI_TAG));
-            if(rank < p) {
-
-            println("START_TOUR_REQ %d %d", rank, status.MPI_SOURCE);
-            removeElement(&willingTourists, status.MPI_SOURCE);
-            printQueue(&willingTourists);
-            }
+            // if(rank < p) {
+            //     println("START_TOUR_REQ %d %d", rank, status.MPI_SOURCE);
+            //     removeElement(&willingTourists, status.MPI_SOURCE);
+            //     printQueue(&willingTourists);
+            // }
 
             if (status.MPI_SOURCE == getGuideId())
             {
@@ -104,11 +104,12 @@ void *startMessageHandlerThread(void *ptr)
                     changeRegisterStatus(REGISTER_ACCEPTED);
                     sendPacket(0, status.MPI_SOURCE, START_TOUR_ACK);
                 }
-                else if (getState() == WAITING_FOR_REGISTER) //|| getState() == WAITING_FOR_SPOT
+                else if (getState() == WAITING_FOR_REGISTER || getState() == WAITING_FOR_SPOT)
                 {
                     println("REGISTER_FAILED %d od %d", rank, status.MPI_SOURCE);
                     changeRegisterStatus(REGISTER_FAILED);
                     changeGuideId(-1);
+                    changeState(REST);
                 }
             }
             break;

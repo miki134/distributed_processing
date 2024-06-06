@@ -21,6 +21,8 @@ int example();
 int getSize(Queue *q);
 void removeElement(Queue *q, int x);
 
+char* toString(const Queue *q);
+
 void lockMutex(Queue *q);
 void unlockMutex(Queue *q);
 
